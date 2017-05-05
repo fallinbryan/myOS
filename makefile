@@ -55,6 +55,9 @@ boot/boot_sector.bin : boot/boot_sector.asm
 # Clean up
 clean:
 	rm -fr *.bin *.dis *.o os-image *.map
+	rm boot/*.bin
+	rm kernel/*.o
+	rm drivers/*.o
 	
 # Disassemble the kernel - for debugging purposes
 kernel.dis : kernel.bin

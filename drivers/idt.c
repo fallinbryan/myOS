@@ -28,8 +28,12 @@ struct idt_ptr   idtp;
 extern void _idt_load();
 
 void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags) {
+	unsigned short cs_ptr;
+	//__asm__("mov %%cs, %0" : "=d"(cs_ptr));
 	idt[num].base_lo = (base & 0xfff);
 	idt[num].base_hi = (base >> 16) & 0xffff;
+	//idt[num].sel = cs_ptr;
+	//idt[num].sel = 0x08;
 	idt[num].sel = sel;
 	idt[num].always0 = 0;
 	idt[num].flags = flags;

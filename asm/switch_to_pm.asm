@@ -12,8 +12,10 @@ switch_to_pm:
 	mov eax, cr0		; To make the switch to protected mode, we set
 	or  eax, 0x1		; the first bit of CR0, a control register
 	mov cr0, eax
-
-	jmp CODE_SEG:init_pm	; Make a far jump (to a new seg) to our 32 bit
+	;mov eax, CODE_SEG
+	;mov cs, eax
+	
+	jmp 0x08:init_pm	; Make a far jump (to a new seg) to our 32 bit
 				; code. This also forces the CPU ot flush its cache of
 				; pre-fetched and real-mode decoded instructions, which can
 				; cause problems

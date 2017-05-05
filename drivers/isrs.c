@@ -38,6 +38,7 @@ extern void _isr30();
 extern void _isr31();
 
 void isrs_install() {
+	print("setting gate 0\n");
 	idt_set_gate(0, (unsigned)_isr0, 0x08, 0x8E);
 	idt_set_gate(1, (unsigned)_isr1, 0x08, 0x8E);
 	idt_set_gate(2, (unsigned)_isr2, 0x08, 0x8E);
@@ -70,6 +71,7 @@ void isrs_install() {
 	idt_set_gate(29, (unsigned)_isr29, 0x08, 0x8E);
 	idt_set_gate(30, (unsigned)_isr30, 0x08, 0x8E);
 	idt_set_gate(31, (unsigned)_isr31, 0x08, 0x8E);
+	print("gate 31 set\n");
 }
 
 /* This is a simple string array. It contains the message that
