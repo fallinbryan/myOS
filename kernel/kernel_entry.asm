@@ -10,11 +10,27 @@ jmp $			; Hang forever when return from the kernel
 
 ;  Loads the DTP defined in '_idtp' in the processor
 ;  Declared in C as extern void idt_load();
+
 global _idt_load
 
 _idt_load:
+	pusha
+	;call get_eip
+	;mov eax, 0
+	;call print_hex
+	;shr edx, 16
+	;mov eax, 0x10
+	;call print_hex
+	
+	;jmp $
 	lidt [idtp]
+	
+	popa
 	ret
+	
+	get_eip:
+		mov edx, [esp]
+		ret
 
 
 global _isr0
@@ -240,6 +256,7 @@ isr_common_stub:
 	push gs
 	mov ebx, DEBUG_MSG
 	call print_string_pm
+	jmp $
 	mov ax, 0x10	; Load the kernel Data Segment descriptor
 	mov ds, ax
 	mov es, ax
@@ -267,7 +284,7 @@ WHITE_ON_BLACK equ 0x0f			; White text on black background
 print_string_pm:
 	pusha
 	mov edx, VIDEO_MEMORY		; set EDX to the start of vid mem
-	
+	add edx, eax
 print_string_pm_loop:
 	mov al, [ebx]			; Store the char at EBX in AL
 	mov ah, WHITE_ON_BLACK		; Store the attributes in AH
@@ -281,6 +298,73 @@ print_string_pm_loop:
 
 	jmp print_string_pm_loop	; loop around to print the next char
 
+	
+
 print_string_pm_done:
 	popa
 	ret
+	
+print_hex:
+	pusha
+	
+	
+	
+	mov bx, HEX_OUT			; ONLY BX can be used as an address pointer
+	mov ch, dh 				; should move 0001 1111 into ch
+							;ch now has an 8 bit byte  xxxx yyyyy
+	
+	shr ch, 4	  			;  ch will have 0000 0001
+	;mov bh, ch    			;  al will have 0000 0001
+	call PRINT_HEX_CHAR		;  should print 1
+	
+	add bx, 0x1
+	mov ch, dh  			; move 0001 1111 int ch
+	and ch, 0x0F 			; ch now = 0000 1111
+	;mov bh, ch
+	call PRINT_HEX_CHAR     ;
+	
+	add bx, 0x1
+	mov ch, dl
+	
+	shr ch, 4
+	;mov bh, cl
+	call PRINT_HEX_CHAR
+	
+	add bx,0x1
+	mov ch, dl    			;  should move 1011 0110 into cl
+							;  cl now has an 8 bit byte xxxx yyyyy
+	and ch, 0x0F  			;  cl will have 0000 0110
+	;mov bh, cl    			;  al will have 0000 0110
+	call PRINT_HEX_CHAR		;  should print 6
+	
+	
+	
+	mov bx , HEX_OUT 		; print the string pointed to
+	call print_string_pm 		; by BX
+	
+	popa
+	ret
+	
+PRINT_HEX_CHAR:
+		pusha
+							; al has 0000 xxxx
+		cmp ch, 0xa   		; compare al to 0xA bin 0000 1010
+		  jl deci_digit  	; if al < 0xA, then its a decimal digit
+		cmp ch, 0xf	  		; compare al to 0xF bin 0000 1111
+		  jle hexi_digit  	; if al <= 0xF && al > 0xA, then is a hex digit
+	 return_here:
+		
+		mov [bx], ch		
+		
+		popa
+		ret
+		
+	deci_digit:
+		or ch, 0x30
+		jmp return_here
+	hexi_digit:
+		sub ch, 9
+		or ch, 0x40
+		jmp return_here	
+		
+HEX_OUT: db '0x0000 ',0

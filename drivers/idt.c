@@ -27,9 +27,14 @@ struct idt_ptr   idtp;
 
 extern void _idt_load();
 
+//extern print_hex();
+//hPrint(unsigned int val){
+//	__asm__("mov %0, %%ebx" : "b"(val));
+//	print_hex();
+//}
+
 void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags) {
-	unsigned short cs_ptr;
-	//__asm__("mov %%cs, %0" : "=d"(cs_ptr));
+	
 	idt[num].base_lo = (base & 0xfff);
 	idt[num].base_hi = (base >> 16) & 0xffff;
 	//idt[num].sel = cs_ptr;
@@ -37,7 +42,7 @@ void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, uns
 	idt[num].sel = sel;
 	idt[num].always0 = 0;
 	idt[num].flags = flags;
-	print("idt_set_gate");
+	
 
 }
 
@@ -50,8 +55,9 @@ void idt_install() {
 	idtp.base  = &idt;
 
 	// Clear the entire IDT, init to all zeros
-	memset(&idt, 0, sizeof(struct idt_entry) * 256);
-
+	memset(&idt, 0x0, sizeof(struct idt_entry) * 256);
+	//hPrint(dtp.base);
+	
 
 	// Add new ISRs to the IDT here with idt_set_gate
 

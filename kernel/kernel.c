@@ -7,10 +7,20 @@ void main() {
 	idt_install();
 	isrs_install();
 	
+	print("About to divide by zero");
+	for(int i = 0; i < 0xffffff; i++){
+		for(int j = 0; j < 0xa; j++){
+		
+		}
+	}
 	
-	int i = 32;
+	for(int i = 0; i < 0xffffff; i++){
+	}
+	for(int i = 0; i < 0xffffff; i++){
+	}
+	int i = 32/0;
 	print("\ntesting fprint(\"%d is a number,i)\n");
-	fprint("%d is a number",i);
+	fprint("%d is a number\n",i);
 	//todo make print_int() work
 	//print_int(123);
 	
